@@ -48,9 +48,11 @@ const Navbar = () => {
             <Button variant="ghost" size="icon" className="rounded-full">
               <Search size={20} />
             </Button>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <User size={20} />
-            </Button>
+            <Link to="/auth">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <User size={20} />
+              </Button>
+            </Link>
             <Button variant="ghost" size="icon" className="rounded-full relative">
               <ShoppingBag size={20} />
               {cartCount > 0 && (
@@ -94,6 +96,13 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Contact
+            </Link>
+            <Link 
+              to="/auth" 
+              className="text-base font-medium hover:text-primary"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Login / Register
             </Link>
           </nav>
         </div>
