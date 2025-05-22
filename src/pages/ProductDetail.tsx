@@ -1,37 +1,78 @@
 
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ChevronRight, Minus, Plus, ShoppingBag } from "lucide-react";
+import { ChevronRight, Minus, Plus, ShoppingBag, Heart, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { PRODUCTS } from "@/data/products";
+import { supabase } from "@/integrations/supabase/client";
 import { Product } from "@/components/ProductCard";
+import { useCart } from "@/contexts/CartContext";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   const { toast } = useToast();
+  const { addToCart } = useCart();
 
   useEffect(() => {
-    // In a real app, you'd fetch this from an API
-    const foundProduct = PRODUCTS.find(p => p.id === id);
-    setProduct(foundProduct || null);
-    setIsLoading(false);
+    const fetchProduct = async () => {
+      setIsLoading(true);
+      
+      try {
+        // Try to fetch product from Supabase
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('id', id)
+          .single();
+        
+        if (error || !data) {
+          // Fallback to local data if not found in database
+          const foundProduct = PRODUCTS.find(p => p.id === id);
+          setProduct(foundProduct || null);
+        } else {
+          // Map Supabase product to our Product type
+          setProduct({
+            id: data.id,
+            name: data.name,
+            price: data.price,
+            category: data.category,
+            image: data.image_url,
+            description: data.description
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching product:", error);
+        // Fallback to local data if error
+        const foundProduct = PRODUCTS.find(p => p.id === id);
+        setProduct(foundProduct || null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchProduct();
   }, [id]);
-
-  const handleAddToCart = () => {
-    toast({
-      title: "Added to cart",
-      description: `${quantity} x ${product?.name} added to your cart`,
-    });
-  };
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+
+  const handleAddToCart = async () => {
+    if (!product) return;
+    
+    setIsAddingToCart(true);
+    try {
+      await addToCart(product, quantity);
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -146,14 +187,30 @@ const ProductDetail = () => {
                   </div>
                 </div>
                 
-                <Button 
-                  onClick={handleAddToCart} 
-                  className="w-full sm:w-auto px-8 py-6 gap-2"
-                  size="lg"
-                >
-                  <ShoppingBag size={18} />
-                  Add to Cart
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button 
+                    onClick={handleAddToCart} 
+                    className="w-full sm:w-auto px-8 py-6 gap-2"
+                    size="lg"
+                    disabled={isAddingToCart}
+                  >
+                    {isAddingToCart ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <ShoppingBag size={18} />
+                    )}
+                    Add to Cart
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-full sm:w-auto px-8 py-6 gap-2"
+                    size="lg"
+                  >
+                    <Heart size={18} />
+                    Add to Wishlist
+                  </Button>
+                </div>
               </div>
               
               <div className="border-t border-border pt-6 mt-6">
