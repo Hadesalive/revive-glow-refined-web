@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ChevronRight, Minus, Plus, ShoppingBag, Heart, Loader2 } from "lucide-react";
@@ -35,7 +34,19 @@ const ProductDetail = () => {
         if (error || !data) {
           // Fallback to local data if not found in database
           const foundProduct = PRODUCTS.find(p => p.id === id);
-          setProduct(foundProduct || null);
+          
+          if (foundProduct) {
+            // Create a modified version with UUID format for the ID if using local data
+            const productWithProperID = {
+              ...foundProduct,
+              // Only keep the original ID if it's already in UUID format (36 chars with hyphens)
+              // Otherwise generate a UUID from the string ID
+              id: foundProduct.id.length === 36 ? foundProduct.id : crypto.randomUUID()
+            };
+            setProduct(productWithProperID);
+          } else {
+            setProduct(null);
+          }
         } else {
           // Map Supabase product to our Product type
           setProduct({
@@ -49,9 +60,18 @@ const ProductDetail = () => {
         }
       } catch (error) {
         console.error("Error fetching product:", error);
+        
         // Fallback to local data if error
         const foundProduct = PRODUCTS.find(p => p.id === id);
-        setProduct(foundProduct || null);
+        if (foundProduct) {
+          const productWithProperID = {
+            ...foundProduct,
+            id: foundProduct.id.length === 36 ? foundProduct.id : crypto.randomUUID()
+          };
+          setProduct(productWithProperID);
+        } else {
+          setProduct(null);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -69,6 +89,13 @@ const ProductDetail = () => {
     setIsAddingToCart(true);
     try {
       await addToCart(product, quantity);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast({
+        title: "Error",
+        description: "Could not add item to cart. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsAddingToCart(false);
     }
@@ -118,40 +145,48 @@ const ProductDetail = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow">
+        
+        
         <div className="container-custom py-6">
           <div className="flex items-center text-sm text-muted-foreground mb-8">
             <Link to="/" className="hover:text-foreground">Home</Link>
             <ChevronRight size={16} className="mx-2" />
             <Link to="/shop" className="hover:text-foreground">Shop</Link>
             <ChevronRight size={16} className="mx-2" />
-            <Link to={`/shop?category=${product.category.toLowerCase()}`} className="hover:text-foreground">
-              {product.category}
-            </Link>
-            <ChevronRight size={16} className="mx-2" />
-            <span className="text-foreground">{product.name}</span>
+            {product && (
+              <>
+                <Link to={`/shop?category=${product.category.toLowerCase()}`} className="hover:text-foreground">
+                  {product.category}
+                </Link>
+                <ChevronRight size={16} className="mx-2" />
+              </>
+            )}
+            <span className="text-foreground">{product?.name}</span>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            
             <div>
               <div className="aspect-square rounded-lg overflow-hidden">
                 <img
-                  src={product.image}
-                  alt={product.name}
+                  src={product?.image}
+                  alt={product?.name}
                   className="object-cover w-full h-full"
                 />
               </div>
             </div>
             
+            
             <div className="space-y-6">
               <div>
-                <p className="text-sm text-muted-foreground">{product.category}</p>
-                <h1 className="text-3xl font-heading mt-1">{product.name}</h1>
-                <p className="text-2xl font-medium mt-3">${product.price.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground">{product?.category}</p>
+                <h1 className="text-3xl font-heading mt-1">{product?.name}</h1>
+                <p className="text-2xl font-medium mt-3">${product?.price.toFixed(2)}</p>
               </div>
               
               <div>
                 <p className="text-muted-foreground">
-                  {product.description}
+                  {product?.description}
                 </p>
               </div>
               
@@ -212,6 +247,7 @@ const ProductDetail = () => {
                   </Button>
                 </div>
               </div>
+              
               
               <div className="border-t border-border pt-6 mt-6">
                 <h3 className="font-medium mb-3">Product Details</h3>

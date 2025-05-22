@@ -58,7 +58,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         `)
         .eq('user_id', session.user.id);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching cart items:', error);
+        throw error;
+      }
       
       if (cartItems) {
         const formattedItems = cartItems.map(item => ({
@@ -111,12 +114,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
       
+      // Make sure product.id is in the correct format for UUID
+      // This is important when using local data that might not have UUID format
+      const productId = product.id;
+      
+      if (!productId) {
+        throw new Error("Invalid product ID");
+      }
+      
       // Check if product already exists in cart
       const { data: existingItem } = await supabase
         .from('cart_items')
         .select('*')
         .eq('user_id', session.user.id)
-        .eq('product_id', product.id)
+        .eq('product_id', productId)
         .single();
       
       if (existingItem) {
@@ -134,7 +145,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           .insert([
             { 
               user_id: session.user.id, 
-              product_id: product.id, 
+              product_id: productId, 
               quantity 
             }
           ]);
@@ -148,6 +159,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         title: "Added to cart",
         description: `${product.name} added to your cart`,
       });
+
+      // Open the cart automatically when adding an item
+      setIsCartOpen(true);
     } catch (error) {
       console.error("Error adding to cart:", error);
       toast({

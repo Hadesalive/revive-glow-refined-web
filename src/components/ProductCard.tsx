@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
 
 export interface Product {
   id: string;
@@ -17,6 +18,13 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation to product detail
+    await addToCart(product, 1);
+  };
+
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-background transition-all hover:shadow-md">
       <Link to={`/product/${product.id}`} className="aspect-square overflow-hidden">
@@ -34,7 +42,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
           </Link>
           <p className="font-medium">${product.price.toFixed(2)}</p>
         </div>
-        <Button size="sm" className="mt-3 w-full gap-2 rounded-md py-5" variant="outline">
+        <Button 
+          size="sm" 
+          className="mt-3 w-full gap-2 rounded-md py-5" 
+          variant="outline"
+          onClick={handleAddToCart}
+        >
           <ShoppingBag size={16} />
           <span>Add to Cart</span>
         </Button>
