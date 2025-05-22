@@ -17,15 +17,19 @@ import {
   BarChart, 
   CircleDollarSign, 
   Package, 
-  ShoppingCart, 
+  ShoppingBag, 
   Heart, 
   UserCircle,
   Settings,
   Users,
   PlusCircle,
   Clock,
-  Truck
+  Truck,
+  Search,
+  Filter
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Product } from "@/components/ProductCard";
 
 const Dashboard = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -34,6 +38,9 @@ const Dashboard = () => {
   const [userName, setUserName] = useState<string>("");
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [wishlistItems, setWishlistItems] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -82,9 +89,9 @@ const Dashboard = () => {
           console.error("Error fetching orders:", error);
         }
 
-        // For admin, we could fetch additional data here
+        // For admin, fetch all products
         if (profile.role === 'admin') {
-          // Additional admin data fetching could go here
+          fetchProducts();
         }
       }
       
@@ -109,10 +116,68 @@ const Dashboard = () => {
     };
   }, [navigate]);
 
+  // Fetch products from Supabase
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      if (data) {
+        const mappedProducts = data.map(p => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          category: p.category,
+          image: p.image_url,
+          description: p.description
+        }));
+        setProducts(mappedProducts);
+        setFilteredProducts(mappedProducts);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load products. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Filter products based on search query
+  useEffect(() => {
+    if (products.length > 0) {
+      const filtered = products.filter(product => 
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    }
+  }, [searchQuery, products]);
+
   const handleUpdateProfile = () => {
     toast({
       title: "Profile update",
       description: "Profile settings feature coming soon!",
+    });
+  };
+
+  const handleAddProduct = () => {
+    toast({
+      title: "Add Product",
+      description: "Product creation form will appear here soon!",
+    });
+  };
+
+  const handleEditProduct = (id: string) => {
+    toast({
+      title: "Edit Product",
+      description: `Editing product with ID: ${id}`,
     });
   };
 
@@ -187,7 +252,7 @@ const Dashboard = () => {
                 <BarChart className="h-4 w-4" /> Overview
               </TabsTrigger>
               <TabsTrigger value="orders" className="flex items-center gap-2">
-                <ShoppingCart className="h-4 w-4" /> Orders
+                <ShoppingBag className="h-4 w-4" /> Orders
               </TabsTrigger>
               <TabsTrigger value="wishlist" className="flex items-center gap-2">
                 <Heart className="h-4 w-4" /> Wishlist
@@ -206,7 +271,7 @@ const Dashboard = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center gap-4">
                       <div className="bg-blue-500 text-white rounded-full p-3">
-                        <ShoppingCart className="h-6 w-6" />
+                        <ShoppingBag className="h-6 w-6" />
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Orders</p>
@@ -296,7 +361,26 @@ const Dashboard = () => {
                       </TableBody>
                     </Table>
                     <div className="mt-4 flex justify-center">
-                      <Button variant="outline" className="w-full" onClick={() => document.querySelector('[data-value="orders"]')?.click()}>
+                      <Button 
+                        variant="outline" 
+                        className="w-full" 
+                        onClick={() => {
+                          const ordersTab = document.querySelector('[data-value="orders"]');
+                          if (ordersTab) {
+                            ordersTab.setAttribute('aria-selected', 'true');
+                            // Find the corresponding tab content and display it
+                            const ordersContent = document.querySelector('[role="tabpanel"][data-value="orders"]');
+                            if (ordersContent) {
+                              // Hide all tab contents
+                              document.querySelectorAll('[role="tabpanel"]').forEach(content => {
+                                content.setAttribute('hidden', 'true');
+                              });
+                              // Show orders tab content
+                              ordersContent.removeAttribute('hidden');
+                            }
+                          }
+                        }}
+                      >
                         View All Orders
                       </Button>
                     </div>
@@ -409,7 +493,7 @@ const Dashboard = () => {
                         <TableRow>
                           <TableCell colSpan={5} className="text-center py-10">
                             <div className="space-y-3 flex flex-col items-center">
-                              <ShoppingCart className="h-12 w-12 text-muted-foreground/50" />
+                              <ShoppingBag className="h-12 w-12 text-muted-foreground/50" />
                               <p className="text-muted-foreground">You haven't placed any orders yet.</p>
                               <Button onClick={() => navigate("/shop")}>Start Shopping</Button>
                             </div>
@@ -462,19 +546,19 @@ const Dashboard = () => {
                       <p className="text-muted-foreground mb-4">Manage your store's products</p>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="bg-white rounded-lg p-4 shadow-sm text-center border">
-                          <p className="font-medium text-2xl">{PRODUCTS.length}</p>
+                          <p className="font-medium text-2xl">{filteredProducts.length}</p>
                           <p className="text-muted-foreground text-sm">Products</p>
                         </div>
                         <div className="bg-white rounded-lg p-4 shadow-sm text-center border">
                           <p className="font-medium text-2xl">
-                            {new Set(PRODUCTS.map(p => p.category)).size}
+                            {Array.from(new Set(filteredProducts.map(p => p.category))).length}
                           </p>
                           <p className="text-muted-foreground text-sm">Categories</p>
                         </div>
                       </div>
                     </CardContent>
                     <CardFooter>
-                      <Button className="w-full gap-2">
+                      <Button className="w-full gap-2" onClick={handleAddProduct}>
                         <PlusCircle className="h-4 w-4" /> Add New Product
                       </Button>
                     </CardFooter>
@@ -483,7 +567,7 @@ const Dashboard = () => {
                   <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg flex items-center gap-2">
-                        <ShoppingCart className="h-5 w-5" /> Order Management
+                        <ShoppingBag className="h-5 w-5" /> Order Management
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -525,8 +609,19 @@ const Dashboard = () => {
                 
                 <Card>
                   <CardHeader className="pb-3 flex flex-row items-center justify-between">
-                    <CardTitle>Recent Products</CardTitle>
-                    <Button size="sm">View All</Button>
+                    <CardTitle>Products</CardTitle>
+                    <div className="flex gap-2">
+                      <div className="relative w-full md:w-64">
+                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input 
+                          placeholder="Search products..." 
+                          className="pl-8" 
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                      </div>
+                      <Button size="sm" onClick={handleAddProduct}>Add New</Button>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <Table>
@@ -540,7 +635,7 @@ const Dashboard = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {PRODUCTS.slice(0, 5).map((product) => (
+                        {filteredProducts.slice(0, 5).map((product) => (
                           <TableRow key={product.id}>
                             <TableCell>
                               <div className="flex items-center gap-3">
@@ -557,15 +652,32 @@ const Dashboard = () => {
                             <TableCell>{product.category}</TableCell>
                             <TableCell>${product.price.toFixed(2)}</TableCell>
                             <TableCell>
-                              <Badge variant={product.inStock ? "outline" : "destructive"} className="bg-green-50 text-green-700 hover:bg-green-100">
+                              <Badge variant="outline" className="bg-green-50 text-green-700 hover:bg-green-100">
                                 In stock
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right">
-                              <Button variant="ghost" size="sm">Edit</Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => handleEditProduct(product.id)}
+                              >
+                                Edit
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}
+                        {filteredProducts.length === 0 && (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center py-10">
+                              <div className="space-y-3 flex flex-col items-center">
+                                <Package className="h-12 w-12 text-muted-foreground/50" />
+                                <p className="text-muted-foreground">No products found.</p>
+                                <Button onClick={handleAddProduct}>Add Product</Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
                       </TableBody>
                     </Table>
                   </CardContent>
@@ -598,4 +710,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
