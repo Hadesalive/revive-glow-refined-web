@@ -84,4 +84,22 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  /* New floating animation */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animation-delay-700 {
+    animation-delay: 700ms;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
 }
