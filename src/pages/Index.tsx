@@ -4,6 +4,9 @@ import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import BrandStory from "@/components/BrandStory";
+import IngredientsSpotlight from "@/components/IngredientsSpotlight";
+import Testimonials from "@/components/Testimonials";
+import Sustainability from "@/components/Sustainability";
 import Newsletter from "@/components/Newsletter";
 
 const Index = () => {
@@ -14,6 +17,9 @@ const Index = () => {
         <HeroSection />
         <FeaturedProducts />
         <BrandStory />
+        <IngredientsSpotlight />
+        <Testimonials />
+        <Sustainability />
         <Newsletter />
       </main>
       <Footer />

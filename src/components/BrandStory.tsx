@@ -19,12 +19,12 @@ const BrandStory = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-xl transform rotate-3 group-hover:rotate-6 transition-transform duration-500"></div>
             <div className="relative bg-white rounded-3xl p-8 shadow-2xl transform group-hover:scale-105 transition-all duration-500">
               <img
-                src="/lovable-uploads/d6cd2883-efd1-460e-bc18-af85248e484e.png"
-                alt="Black Soap Paste - Lemongrass Scented"
+                src="/lovable-uploads/2ec47046-57d0-492a-9731-7a72946cf177.png"
+                alt="Revive & Glow Facial Oil"
                 className="w-full h-auto object-contain rounded-2xl"
               />
               <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
-                Featured
+                Bestseller
               </div>
             </div>
           </div>
@@ -34,7 +34,7 @@ const BrandStory = () => {
             {/* Badge */}
             <div className="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">
               <Sparkles className="w-4 h-4 mr-2" />
-              Our Signature Product
+              Our Signature Products
             </div>
 
             {/* Main heading */}
@@ -46,13 +46,13 @@ const BrandStory = () => {
             {/* Story paragraphs */}
             <div className="space-y-6 text-lg text-gray-700 leading-relaxed">
               <p>
-                Our <strong>Black Soap Paste with Lemongrass</strong> represents years of dedication to creating skincare that truly works. Founded in 2020, Revive & Glow was born from a passion for products that respect your skin's natural balance.
+                Our <strong>Premium Facial Oil</strong> and <strong>Black Soap Paste</strong> represent years of dedication to creating skincare that truly works. Founded in 2020, Revive & Glow was born from a passion for products that respect your skin's natural balance.
               </p>
               <p>
-                Our founder, Emma Lawson, struggled with sensitive skin for years and was frustrated by products that promised results but delivered irritation. After extensive research and collaboration with leading dermatologists, she created this signature black soap paste.
+                Our founder, Emma Lawson, struggled with sensitive skin for years and was frustrated by products that promised results but delivered irritation. After extensive research and collaboration with leading dermatologists, she created these signature formulations.
               </p>
               <p>
-                Each 450g container is carefully crafted with premium natural ingredients, featuring the refreshing scent of lemongrass. This isn't just skincare—it's a commitment to your skin's health and your daily wellness ritual.
+                Each product is carefully crafted with premium natural ingredients, featuring therapeutic-grade essential oils and traditional botanicals. This isn't just skincare—it's a commitment to your skin's health and your daily wellness ritual.
               </p>
             </div>
 
@@ -83,8 +83,8 @@ const BrandStory = () => {
                   <Sparkles className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">Lemongrass</p>
-                  <p className="text-sm text-gray-600">Refreshing scent</p>
+                  <p className="font-semibold text-gray-900">Premium Quality</p>
+                  <p className="text-sm text-gray-600">Therapeutic grade</p>
                 </div>
               </div>
             </div>
