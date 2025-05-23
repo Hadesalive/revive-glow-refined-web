@@ -1,227 +1,136 @@
 
-import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ShoppingBag, User, Menu, X, Search, LogOut } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useToast } from "@/hooks/use-toast";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, ShoppingBag, User, LogOut } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { Cart } from "@/components/Cart";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+  const { cartCount, setIsCartOpen } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { cartCount, setIsCartOpen } = useCart();
 
-  useEffect(() => {
-    // Check if user is authenticated when component mounts
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-    };
-
-    checkAuth();
-
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setIsAuthenticated(!!session);
-      }
-    );
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
       toast({
-        title: "Successfully logged out",
-        description: "You have been logged out successfully.",
-      });
-      navigate("/");
-    } catch (error) {
-      console.error("Error logging out:", error);
-      toast({
-        title: "Logout failed",
-        description: "An error occurred while logging out. Please try again.",
+        title: "Error signing out",
+        description: error.message,
         variant: "destructive",
+      });
+    } else {
+      navigate("/");
+      toast({
+        title: "Signed out successfully",
       });
     }
   };
 
+  const navItems = [
+    { name: "Shop", href: "/shop" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ];
+
   return (
-    <>
-      <header className="w-full bg-background border-b border-border sticky top-0 z-40">
-        <div className="container-custom py-4">
-          <div className="flex items-center justify-between">
-            {/* Mobile menu button */}
-            <button 
-              className="md:hidden text-foreground"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+    <nav className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-border shadow-sm">
+      <div className="container-custom">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2 group">
+            <img 
+              src="/lovable-uploads/4ceb6aac-2445-438e-a9a2-1878a91e762d.png" 
+              alt="Revive & Glow Logo" 
+              className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
+            />
+          </Link>
 
-            {/* Logo */}
-            <div className="flex items-center">
-              <Link to="/" className="text-xl font-heading font-medium tracking-tight">
-                Revive & Glow
-              </Link>
-            </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link to="/" className="text-sm font-medium hover:text-primary">
-                Home
-              </Link>
-              <Link to="/shop" className="text-sm font-medium hover:text-primary">
-                Shop
-              </Link>
-              <Link to="/about" className="text-sm font-medium hover:text-primary">
-                About
-              </Link>
-              <Link to="/contact" className="text-sm font-medium hover:text-primary">
-                Contact
-              </Link>
-              {isAuthenticated && (
-                <Link to="/dashboard" className="text-sm font-medium hover:text-primary">
-                  Dashboard
-                </Link>
-              )}
-            </nav>
-
-            {/* Right side buttons */}
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Search size={20} />
-              </Button>
-              
-              {isAuthenticated ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full">
-                      <User size={20} />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <Link to="/dashboard">
-                      <DropdownMenuItem>
-                        Dashboard
-                      </DropdownMenuItem>
-                    </Link>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Logout</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Link to="/auth">
-                  <Button variant="ghost" size="icon" className="rounded-full">
-                    <User size={20} />
-                  </Button>
-                </Link>
-              )}
-              
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="rounded-full relative"
-                onClick={() => setIsCartOpen(true)}
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="text-foreground hover:text-primary transition-colors duration-200 font-medium relative group"
               >
-                <ShoppingBag size={20} />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
+                {item.name}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+            ))}
+          </div>
+
+          {/* Right Side Actions */}
+          <div className="flex items-center space-x-3">
+            {/* Cart Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative hover:bg-primary/10 hover:text-primary transition-colors duration-200"
+              onClick={() => setIsCartOpen(true)}
+            >
+              <ShoppingBag className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium animate-pulse">
+                  {cartCount}
+                </span>
+              )}
+            </Button>
+
+            {/* User Menu */}
+            <div className="hidden md:flex items-center space-x-2">
+              <Link to="/auth">
+                <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
+                  <User className="h-4 w-4 mr-2" />
+                  Account
+                </Button>
+              </Link>
             </div>
+
+            {/* Mobile Menu */}
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <div className="flex flex-col space-y-4 mt-8">
+                  <img 
+                    src="/lovable-uploads/4ceb6aac-2445-438e-a9a2-1878a91e762d.png" 
+                    alt="Revive & Glow Logo" 
+                    className="h-12 w-auto mb-6"
+                  />
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className="text-lg font-medium text-foreground hover:text-primary transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                  <div className="border-t pt-4 mt-6">
+                    <Link
+                      to="/auth"
+                      className="flex items-center text-lg font-medium text-foreground hover:text-primary transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <User className="h-5 w-5 mr-3" />
+                      Account
+                    </Link>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
-
-        {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-background border-b border-border animate-fade-in">
-            <nav className="flex flex-col space-y-4 p-6">
-              <Link 
-                to="/" 
-                className="text-base font-medium hover:text-primary"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link 
-                to="/shop" 
-                className="text-base font-medium hover:text-primary"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Shop
-              </Link>
-              <Link 
-                to="/about" 
-                className="text-base font-medium hover:text-primary"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link 
-                to="/contact" 
-                className="text-base font-medium hover:text-primary"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contact
-              </Link>
-              {isAuthenticated && (
-                <>
-                  <Link 
-                    to="/dashboard" 
-                    className="text-base font-medium hover:text-primary"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                  <button 
-                    className="text-base font-medium hover:text-primary text-left flex items-center"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      handleLogout();
-                    }}
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                  </button>
-                </>
-              )}
-              {!isAuthenticated && (
-                <Link 
-                  to="/auth" 
-                  className="text-base font-medium hover:text-primary"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Login / Register
-                </Link>
-              )}
-            </nav>
-          </div>
-        )}
-      </header>
-      <Cart />
-    </>
+      </div>
+    </nav>
   );
 };
 

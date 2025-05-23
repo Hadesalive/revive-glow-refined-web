@@ -30,24 +30,24 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: '#7A9B57', // Natural green from logo
+					foreground: '#FFFFFF'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: '#F8F5F0', // Cream background
+					foreground: '#2D3748'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
 				},
 				muted: {
-					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))'
+					DEFAULT: '#F7FAFC',
+					foreground: '#718096'
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					DEFAULT: '#FF6B35', // Orange accent from logo
+					foreground: '#FFFFFF'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -57,31 +57,45 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Brand colors from logo
+				brand: {
+					green: {
+						50: '#F0F9E8',
+						100: '#D9F0C4',
+						200: '#B8E394',
+						300: '#94D564',
+						400: '#7A9B57',
+						500: '#6B8E23', // Primary green
+						600: '#5A7A1E',
+						700: '#4A6519',
+						800: '#3A5014',
+						900: '#2A3B0F',
+					},
+					orange: {
+						50: '#FFF4E6',
+						100: '#FFE0B3',
+						200: '#FFCC80',
+						300: '#FFB74D',
+						400: '#FFA726',
+						500: '#FF6B35', // Primary orange
+						600: '#F57C00',
+						700: '#EF6C00',
+						800: '#E65100',
+						900: '#BF360C',
+					}
+				},
 				cream: "#F8F5F0",
-				sage: "#D1D5C8",
 				sage: {
 					50: "#F4F6F2",
 					100: "#E9ECE4",
 					200: "#D1D5C8",
 					300: "#B9C0AD",
 					400: "#A1AB91",
-					500: "#8A9676",
-					600: "#6F7B5C",
+					500: "#7A9B57", // Updated to match brand green
+					600: "#6B8E23",
 					700: "#555F46",
 					800: "#3A3F30",
 					900: "#1E2018",
-				},
-				brown: {
-					50: "#F9F6F3",
-					100: "#F3EDE7",
-					200: "#E7DBCF",
-					300: "#D4C3B0",
-					400: "#C2AA91",
-					500: "#B09172",
-					600: "#9A795A",
-					700: "#7E6349",
-					800: "#5F4B37",
-					900: "#3F3225",
 				},
 			},
 			borderRadius: {

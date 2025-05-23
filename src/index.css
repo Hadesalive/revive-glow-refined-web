@@ -16,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 24 10% 10%;
 
-    --primary: 24 5% 20%;
+    --primary: 81 28% 46%; /* Brand green #7A9B57 */
     --primary-foreground: 0 0% 98%;
 
     --secondary: 60 9% 82%;
@@ -25,17 +25,17 @@
     --muted: 24 5% 96%;
     --muted-foreground: 24 5% 40%;
 
-    --accent: 60 9% 82%;
-    --accent-foreground: 24 5% 20%;
+    --accent: 18 100% 60%; /* Brand orange #FF6B35 */
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 24 5% 90%;
     --input: 24 5% 90%;
-    --ring: 24 5% 90%;
+    --ring: 81 28% 46%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 }
 
@@ -66,11 +66,22 @@
     @apply inline-flex items-center justify-center whitespace-nowrap rounded-md bg-secondary px-6 py-3 text-sm font-medium text-secondary-foreground shadow-sm transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
   }
 
-  .button-ghost {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
+  .button-accent {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md bg-accent px-6 py-3 text-sm font-medium text-accent-foreground shadow-sm transition-colors hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
   }
 
   .input-field {
     @apply flex h-12 w-full rounded-md border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .gradient-brand {
+    background: linear-gradient(135deg, #7A9B57 0%, #FF6B35 100%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #7A9B57 0%, #FF6B35 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
