@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useToast } from '@/hooks/use-toast';
+import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -56,116 +57,188 @@ const Contact = () => {
     setIsSubmitting(false);
   };
 
+  const contactInfo = [
+    {
+      icon: Mail,
+      title: "Email",
+      info: "support@reviveandglow.com",
+      description: "Send us an email anytime"
+    },
+    {
+      icon: Phone,
+      title: "Phone",
+      info: "(555) 123-4567",
+      description: "Mon-Fri 9am-6pm EST"
+    },
+    {
+      icon: MapPin,
+      title: "Address",
+      info: "123 Natural Way, Glow City, CA 90210",
+      description: "Visit our headquarters"
+    }
+  ];
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
-      <main className="flex-1 pt-16 pb-12">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">Contact Us</h1>
-          
-          <div className="max-w-3xl mx-auto mb-12 text-center">
-            <p className="text-lg mb-6">
-              Have questions about our products or need assistance with your order?
-              We're here to help! Fill out the form below and our team will get back to you as soon as possible.
+      
+      {/* Hero Section */}
+      <section className="relative py-32 bg-gradient-to-b from-gray-50 to-white">
+        <div className="container-custom">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-6xl md:text-7xl font-heading font-bold text-gray-900 mb-8 tracking-tight">
+              Get in Touch
+            </h1>
+            <p className="text-2xl text-gray-600 leading-relaxed">
+              Have questions about our products or need assistance with your order? 
+              We're here to help! Our team is ready to provide you with the support you need.
             </p>
           </div>
-          
-          <div className="max-w-xl mx-auto">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Your name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="your@email.com" type="email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="subject"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Subject</FormLabel>
-                      <FormControl>
-                        <Input placeholder="What is this regarding?" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Message</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Tell us how we can help..." 
-                          className="min-h-[150px]" 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={isSubmitting}
+        </div>
+      </section>
+
+      {/* Contact Info Cards */}
+      <section className="py-24 bg-white">
+        <div className="container-custom">
+          <div className="grid md:grid-cols-3 gap-8 mb-20">
+            {contactInfo.map((item, index) => {
+              const IconComponent = item.icon;
+              return (
+                <div 
+                  key={index}
+                  className="bg-gray-50 p-8 rounded-2xl text-center hover:bg-gray-100 transition-all duration-300"
                 >
-                  {isSubmitting ? "Sending..." : "Send Message"}
-                </Button>
-              </form>
-            </Form>
-            
-            <div className="mt-12 pt-8 border-t border-border">
-              <h2 className="text-xl font-semibold mb-4">Other Ways to Reach Us</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <p className="font-medium">Email</p>
-                  <p>support@reviveandglow.com</p>
+                  <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center">
+                    <IconComponent className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-lg font-medium text-primary mb-2">
+                    {item.info}
+                  </p>
+                  <p className="text-gray-600">
+                    {item.description}
+                  </p>
                 </div>
-                
-                <div>
-                  <p className="font-medium">Phone</p>
-                  <p>(555) 123-4567</p>
-                </div>
-                
-                <div>
-                  <p className="font-medium">Address</p>
-                  <p>123 Natural Way, Glow City, CA 90210</p>
-                </div>
-              </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form */}
+      <section className="py-24 bg-gray-50">
+        <div className="container-custom">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-heading font-bold text-gray-900 mb-6">
+                Send us a Message
+              </h2>
+              <p className="text-xl text-gray-600">
+                Fill out the form below and we'll get back to you within 24 hours.
+              </p>
+            </div>
+
+            <div className="bg-white p-8 md:p-12 rounded-2xl shadow-sm">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-lg font-medium">Name</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Your name" 
+                              className="h-12 rounded-xl border-gray-200 focus:border-primary" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-lg font-medium">Email</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="your@email.com" 
+                              type="email" 
+                              className="h-12 rounded-xl border-gray-200 focus:border-primary" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="subject"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg font-medium">Subject</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="What is this regarding?" 
+                            className="h-12 rounded-xl border-gray-200 focus:border-primary" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="message"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg font-medium">Message</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Tell us how we can help..." 
+                            className="min-h-[150px] rounded-xl border-gray-200 focus:border-primary resize-none" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className="w-full h-14 text-lg font-medium rounded-xl bg-primary hover:bg-primary/90 transition-all duration-300 hover:scale-[1.02]"
+                  >
+                    {isSubmitting ? (
+                      "Sending..."
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5 mr-2" />
+                        Send Message
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </Form>
             </div>
           </div>
         </div>
-      </main>
+      </section>
+
       <Footer />
     </div>
   );
